@@ -19,31 +19,53 @@ let actions = {
       ...loginData
     }, axiosConfig)
     .then((response) => {
-      commit('loginStop', null)
-      commit('updateAccessToken', response.data.access_token)
-      return {
-        'accessToken': response.data.access_token,
-        'tokenType': response.data.token_type,
-        'expiresAt': response.data.expires_at,
-        'userName': response.data.username,
-        'userEmail': response.data.useremail,
+      //commit('loginStop', null)
+      //console.log(response)
+      if(response.data.success) {
+        commit('updateAccessToken', {
+          accessToken: response.data.access_token,
+          tokenType: response.data.token_type,
+          expiresAt: response.data.expires_at
+        })
+        return {
+          success: response.data.success,
+          accessToken: response.data.access_token,
+          tokenType: response.data.token_type,
+          expiresAt: response.data.expires_at,
+          userName: response.data.username,
+          userEmail: response.data.useremail,
+        }
+      } else {
+        commit('updateAccessToken', {
+          'accessToken': null,
+          'tokenType': null,
+          'expiresAt': null
+        })
+        return {
+          'success': response.data.success,
+          'errors': response.data.errors
+        }
       }
     })
     .catch(error => {
-      console.log(error.response.data)
-      //commit('loginStop', error.response.data.error)
-      commit('loginStop', error)
       commit('updateAccessToken', {
         'accessToken': null,
-        'tokenType': null
+        'tokenType': null,
+        'expiresAt': null
       })
     })
-
     return authenticationResult
+  },
+  loginStop({ commit }, params) {
+    commit('loginStop', {
+      'loginError': params.loginError, 
+      'loginErrorMessages': params.loginErrorMessages
+    })
   },
   logout({ commit, dispatch }) {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('tokenType')
+    localStorage.removeItem('expiresAt')
     dispatch('removeUserInfo')
     commit('logout')
     router.push('/login')
@@ -58,6 +80,7 @@ let actions = {
     .then(response => {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('tokenType')
+      localStorage.removeItem('expiresAt')
       dispatch('removeUserInfo')
       commit('logout')
       router.push('/login')
@@ -69,6 +92,7 @@ let actions = {
   fetchAccessToken({ commit, dispatch }, params) {
     var accessToken = localStorage.getItem('accessToken')
     var tokenType = localStorage.getItem('tokenType')
+    var expiresAt = localStorage.getItem('expiresAt')
     /*
      * Check if the Access Token is valid
      */
@@ -91,7 +115,11 @@ let actions = {
       } 
     }
       
-    commit('updateAccessToken', {accessToken, tokenType})
+    commit('updateAccessToken', {
+      accessToken,
+      tokenType, 
+      expiresAt
+    })
   },
   verifyAccessToken({ commit }, params) {
     /*
@@ -170,7 +198,7 @@ let actions = {
     })
     return authenticationResult
   },
-  registrationStop({ commit, dispatch }, params) {
+  registrationStop({ commit }, params) {
     commit('registrationStop', {
       'registrationError': params.registrationError, 
       'registrationErrorMessages': params.registrationErrorMessages

@@ -84,7 +84,7 @@ export default {
           } else {
             var errorMessages = this.getFormValidationErrorMessages(response.errors)
             this.registrationStop({
-              'registrationError': 'Please fix the errors', 
+              'registrationError': 'Please fix the errors',
               'registrationErrorMessages': errorMessages
             })
           }

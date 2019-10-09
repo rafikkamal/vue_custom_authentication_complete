@@ -3,6 +3,7 @@ let state = {
 	tokenType: null,
     loggingIn : false,
     loginError : null,
+	loginErrorMessages : null,
     userName: null,
     userEmail: null,
     registeringIn : false,

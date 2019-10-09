@@ -1,12 +1,25 @@
 <template>
   <div class="login">
+    <h2>{{ title }}</h2>
+    <hr/>
+    
     <div v-if="loggingIn" class="container-loading">
       <img src="../loading.gif" alt="Loading Icon">
     </div>
-    <p v-if="loginError">{{ loginError }}</p>
+    
+    <h4 v-if="loginError" class="error-message">{{ loginError }}</h4>
+
     <form @submit.prevent="loginSubmit">
       <input type="email" placeholder="E-Mail" v-model="email">
+      <p v-if="loginErrorMessages" class="error-message">
+        {{ loginErrorMessages['email'] }}
+      </p>
+
       <input type="password" placeholder="Password" v-model="password">
+      <p v-if="loginErrorMessages" class="error-message">
+        {{ loginErrorMessages['password'] }}
+      </p>
+
       <div>
         <span>Remeber me </span>
         <input type="checkbox" v-model="remember_me"></div>
@@ -22,7 +35,8 @@ import router from '../router'
 export default {
 	data() {
 	  return {
-	    email: 'rafikkk@gmail.com',
+      title: 'Login',
+	    email: 'rafik@gmail.com',
 	    password: '123123',
       remember_me: false
 	  }
@@ -31,13 +45,15 @@ export default {
 	  ...mapState([
 	    'loggingIn',
 	    'loginError',
+      'loginErrorMessages'
 	  ])
 	},
 	methods: {
 	  ...mapActions([
 	    'doLogin',
       'fetchUserInfo',
-      'fetchAccessToken'
+      'fetchAccessToken',
+      'loginStop'
 	  ]),
 	  loginSubmit() {
 	    this.doLogin({
@@ -46,13 +62,22 @@ export default {
         remember_me: this.remember_me
 	    })
       .then((res) => {
-        if(res) {
+        if(res.success) {
+          this.loginStop({
+            'loginError': null, 
+            'loginErrorMessages': null
+          })
           this.setLocaleStorageInfo(res)
           this.fetchUserInfo({
             'userName': res.userName,
             'userEmail': res.userEmail
           })
           router.push('/users')
+        } else {
+          this.loginStop({
+            'loginError': 'Please Enter Corrent Email / Password', 
+            'loginErrorMessages': this.getFormValidationErrorMessages(res.errors)
+          })
         }
       })
       .catch((err) => {
@@ -62,8 +87,23 @@ export default {
     setLocaleStorageInfo: (res) => {
       localStorage.setItem('accessToken', res.accessToken)
       localStorage.setItem('tokenType', res.tokenType)
+      localStorage.setItem('expiresAt', res.expiresAt)
       localStorage.setItem('userName', res.userName)
       localStorage.setItem('userEmail', res.userEmail)
+    },
+    getFormValidationErrorMessages(errors) {
+      var errorMessages = {}
+      var errorObjs = errors
+      var errorMessage = ""
+      for(var key in errorObjs) {
+        var errorObj = errorObjs[key]
+        for (let prop in errorObj) {
+          errorMessage += errorObj[prop]
+        }
+        errorMessages[key] = errorMessage
+        errorMessage = ""
+      }
+      return errorMessages
     }
 	}
 }
@@ -92,6 +132,9 @@ export default {
         width: 4rem;
         height: 4rem;
       }
+    }
+    hr {
+      margin-bottom:25px;
     }
     form {
       display: flex;
@@ -123,6 +166,14 @@ export default {
           margin-left: 10px;
         }
       }
+    }
+    .error-message {
+      text-align: left;
+      color: red;
+      margin-top: 0px;
+    }
+    p.error-message {
+      font-size: 12px;
     }
   }
 </style>

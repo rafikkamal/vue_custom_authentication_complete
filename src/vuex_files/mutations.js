@@ -1,12 +1,14 @@
 let mutations = {
   loginStart: state => state.loggingIn = true,
-  loginStop: (state, errorMessage) => {
+  loginStop: (state, params) => {
     state.loggingIn = false
-    state.loginError = errorMessage
+    state.loginError = params.loginError
+    state.loginErrorMessages = params.loginErrorMessages
   },
   updateAccessToken: (state, params) => {
     state.accessToken = params.accessToken
     state.tokenType = params.tokenType
+    state.expiresAt = params.expiresAt
   },
   updateUserInfo: (state, params) => {
     //console.log(params)
