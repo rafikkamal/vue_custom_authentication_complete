@@ -16,13 +16,13 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex'
 import router from '../router'
 
 export default {
 	data() {
 	  return {
-	    email: 'rafik@gmail.com',
+	    email: 'rafikkk@gmail.com',
 	    password: '123123',
       remember_me: false
 	  }
@@ -45,14 +45,15 @@ export default {
 	      password: this.password,
         remember_me: this.remember_me
 	    })
-      .then((res) => { 
-        console.log(res);
-        this.setLocaleStorageInfo(res)
-        this.fetchUserInfo({
-          'userName': res.userName,
-          'userEmail': res.userEmail
-        })
-        router.push('/users')
+      .then((res) => {
+        if(res) {
+          this.setLocaleStorageInfo(res)
+          this.fetchUserInfo({
+            'userName': res.userName,
+            'userEmail': res.userEmail
+          })
+          router.push('/users')
+        }
       })
       .catch((err) => {
         console.log(err)

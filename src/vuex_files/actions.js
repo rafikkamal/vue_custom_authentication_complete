@@ -129,33 +129,51 @@ let actions = {
         'Accept': 'application/json'
       }
     };
-    axios.post(siteUrl+'signup', {
+
+    /* Try to register the new user */
+    var authenticationResult = axios.post(siteUrl+'signup', {
       ...registrationData
     }, axiosConfig)
-    .then(response => {
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      console.log(err)
+      console.log(err.response)
       commit('registrationStop', {
-        'registrationError': null, 
+        'registrationError': err.response, 
         'registrationErrorMessages': null
       })
-      router.push('/login')
-    })
-    .catch(error => {
-      var errorMessages = {}
-      var errorMessage = ""
-      var errors = error.response.data.errors
-      for(var key in errors) {
-        var errorObj = errors[key]
-        for (let prop in errorObj) {
-          errorMessage += errorObj[prop]
-        }
-        errorMessages[key] = errorMessage
-        errorMessage = ""
+      return {
+        success: false,
+        networkError: true
       }
-      //commit('registrationStop', error.response.data.errors)
-      commit('registrationStop', {
-        'registrationError': 'Please fix the errors', 
-        'registrationErrorMessages': errorMessages
-      })
+      /**
+       * The following also works.
+       * But this was abondend to handle status code 422.
+       */
+      // var errorMessages = {}
+      // var errorMessage = ""
+      // var errors = err.response.data.errors
+      // for(var key in errors) {
+      //   var errorObj = errors[key]
+      //   for (let prop in errorObj) {
+      //     errorMessage += errorObj[prop]
+      //   }
+      //   errorMessages[key] = errorMessage
+      //   errorMessage = ""
+      // }
+      // commit('registrationStop', {
+      //   'registrationError': 'Please fix the errors', 
+      //   'registrationErrorMessages': errorMessages
+      // })
+    })
+    return authenticationResult
+  },
+  registrationStop({ commit, dispatch }, params) {
+    commit('registrationStop', {
+      'registrationError': params.registrationError, 
+      'registrationErrorMessages': params.registrationErrorMessages
     })
   },
   getUserInfo({ commit, dispatch }, params) {
@@ -175,6 +193,21 @@ let actions = {
       console.log(error.response.data)
     })
     return userInfo
+  },
+  getFormValidationErrorMessages({commit, dispatch}, params) {
+    var errorMessages = {}
+    var errorObjs = params.errors
+    var errorMessage = ""
+    for(var key in errorObjs) {
+      var errorObj = errorObjs[key]
+      for (let prop in errorObj) {
+        errorMessage += errorObj[prop]
+      }
+      errorMessages[key] = errorMessage
+      errorMessage = ""
+    }
+    console.log(errorMessages)
+    return errorMessages
   }
 }
 

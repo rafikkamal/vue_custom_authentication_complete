@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <h2>Registations Form</h2>
+    <h2>{{ title }}</h2>
     <hr/>
     <div v-if="registeringIn" class="container-loading">
       <img src="../loading.gif" alt="Loading Icon">
@@ -29,17 +29,20 @@
         {{ registrationErrorMessages['password_confirmation'] }}
       </p>
 
-      <button type="submit">Register</button>
+      <button type="submit">{{ button_title }}</button>
     </form>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex'
+import router from '../router'
 
 export default {
 	data() {
 	  return {
+      title: 'Registation Form',
+      button_title: 'Register',
       username: 'Rafik',
 	    email: 'rafik@gmail.com',
 	    password: '123',
@@ -55,7 +58,8 @@ export default {
 	},
 	methods: {
 	  ...mapActions([
-	    'doRegistration'
+	    'doRegistration',
+      'registrationStop'
 	  ]),
 	  registrationSubmit() {
 	    this.doRegistration({
@@ -64,13 +68,47 @@ export default {
         password: this.password,
         password_confirmation: this.confirm_password
 	    })
-      .then((res) => {
-        console.log("registration vue res")
+      .then((response) => {
+        if(response.success) {
+          this.registrationStop({
+            'registrationError': null, 
+            'registrationErrorMessages': null
+          })
+          router.push('/login')
+        } else {
+          if(response.networkError) {
+            this.registrationStop({
+              'registrationError': 'Network Error',
+              'registrationErrorMessages': null
+            })
+          } else {
+            var errorMessages = this.getFormValidationErrorMessages(response.errors)
+            this.registrationStop({
+              'registrationError': 'Please fix the errors', 
+              'registrationErrorMessages': errorMessages
+            })
+          }
+        }
       }) 
       .catch(err => {
-        console.log("got error")
+        console.log(err)
+        console.log("got an error")
       })
-	  }
+	  },
+    getFormValidationErrorMessages(errors) {
+      var errorMessages = {}
+      var errorObjs = errors
+      var errorMessage = ""
+      for(var key in errorObjs) {
+        var errorObj = errorObjs[key]
+        for (let prop in errorObj) {
+          errorMessage += errorObj[prop]
+        }
+        errorMessages[key] = errorMessage
+        errorMessage = ""
+      }
+      return errorMessages
+    }
 	}
 }
 </script>
