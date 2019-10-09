@@ -4,20 +4,34 @@
     <p>User ID: {{ $route.params.id }}</p>
     <p>Username: {{ userName }} </p>
     <p>Useremail: {{ userEmail }} </p>
-    <button @click=logout>Logout</button>
 
-    <button @click=logoutSubmit>Logout Submit</button>
+    <h2>User Information From Database</h2>
+    <p>User ID    : {{ user.id }}</p>
+    <p>User Name  : {{ user.name }}</p>
+    <p>User Email : {{ user.email }}</p>
+    <Logout/>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex'
+import Logout from '../components/Logout.vue'
 
 export default {
+  components: {
+    Logout
+  },
   data() {
     return {
-      title: 'User Information'
+      title: 'User Information',
+      user: {}
     }
+  },
+  methods: {
+    ...mapActions([
+      'getUserInfo',
+      'fetchUserInfo'
+    ]),
   },
   computed: {
     ...mapState([
@@ -28,16 +42,16 @@ export default {
       'getAuthorizationToken'
     ])
   },
-  methods: {
-    ...mapActions([
-      'logout',
-      'doLogout'
-    ]),
-    logoutSubmit(){
-      this.doLogout({
-        authorizationToken: this.getAuthorizationToken,
+  created() {
+    this.user = this.getUserInfo({
+      authorizationToken: this.getAuthorizationToken,
+    }).then(res => {
+      this.user = res.data
+      this.fetchUserInfo({
+        'userName': res.userName,
+        'userEmail': res.userEmail
       })
-    }
+    })
   }
 }
 </script>

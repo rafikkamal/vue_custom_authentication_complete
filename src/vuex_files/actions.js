@@ -24,6 +24,7 @@ let actions = {
       return {
         'accessToken': response.data.access_token,
         'tokenType': response.data.token_type,
+        'expiresAt': response.data.expires_at,
         'userName': response.data.username,
         'userEmail': response.data.useremail,
       }
@@ -149,6 +150,24 @@ let actions = {
       commit('registrationStop', error.response.data.error)
     })
   },
+  getUserInfo({ commit, dispatch }, params) {
+    /* Axios header config */
+    let axiosConfig = {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': params.authorizationToken
+      }
+    };
+    let userInfo = axios.get(siteUrl+'user', axiosConfig)
+    .then(response => {
+      return response
+    })
+    .catch(error => {
+      console.log(error)
+      commit('registrationStop', error.response.data.error)
+    })
+    return userInfo
+  }
 }
 
 export default actions;

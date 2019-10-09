@@ -7,6 +7,9 @@
     <form @submit.prevent="loginSubmit">
       <input type="email" placeholder="E-Mail" v-model="email">
       <input type="password" placeholder="Password" v-model="password">
+      <div>
+        <span>Remeber me </span>
+        <input type="checkbox" v-model="remember_me"></div>
       <button type="submit">Login</button>
     </form>
   </div>
@@ -20,7 +23,8 @@ export default {
 	data() {
 	  return {
 	    email: 'rafik@gmail.com',
-	    password: '123123'
+	    password: '123123',
+      remember_me: false
 	  }
 	},
 	computed: {
@@ -39,9 +43,10 @@ export default {
 	    this.doLogin({
 	      email: this.email,
 	      password: this.password,
-        remember_me: false
+        remember_me: this.remember_me
 	    })
       .then((res) => { 
+        console.log(res);
         this.setLocaleStorageInfo(res)
         this.fetchUserInfo({
           'userName': res.userName,
@@ -104,6 +109,17 @@ export default {
         cursor: pointer;
         &:hover {
           background-color: lightslategray;
+        }
+      }
+      div {
+        display: inline-block;
+        text-align: left;
+        span {
+          font-size: 12px;
+        }
+        input {
+          position: absolute;
+          margin-left: 10px;
         }
       }
     }
