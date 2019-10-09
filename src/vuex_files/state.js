@@ -7,6 +7,7 @@ let state = {
     userEmail: null,
     registeringIn : false,
 	registrationError : null,
+	registrationErrorMessages : null
 }
 
 export default state;

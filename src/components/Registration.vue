@@ -5,12 +5,30 @@
     <div v-if="registeringIn" class="container-loading">
       <img src="../loading.gif" alt="Loading Icon">
     </div>
-    <p v-if="registerError">{{ registerError }}</p>
+    
+    <h4 v-if="registrationError" class="error-message">{{ registrationError }}</h4>
+
     <form @submit.prevent="registrationSubmit">
       <input type="text" placeholder="Username" v-model="username">
+      <p v-if="registrationErrorMessages" class="error-message">
+        {{ registrationErrorMessages['name'] }}
+      </p>
+
       <input type="email" placeholder="Email" v-model="email">
+      <p v-if="registrationErrorMessages" class="error-message">
+        {{ registrationErrorMessages['email'] }}
+      </p>
+
       <input type="password" placeholder="Password" v-model="password">
+      <p v-if="registrationErrorMessages" class="error-message">
+        {{ registrationErrorMessages['password'] }}
+      </p>
+
       <input type="password" placeholder="Confirm Password" v-model="confirm_password">
+      <p v-if="registrationErrorMessages" class="error-message">
+        {{ registrationErrorMessages['password_confirmation'] }}
+      </p>
+
       <button type="submit">Register</button>
     </form>
   </div>
@@ -24,14 +42,15 @@ export default {
 	  return {
       username: 'Rafik',
 	    email: 'rafik@gmail.com',
-	    password: '123123',
-      confirm_password: '123123'
+	    password: '123',
+      confirm_password: '1'
 	  }
 	},
 	computed: {
 	  ...mapState([
 	    'registeringIn',
-	    'registerError',
+	    'registrationError',
+      'registrationErrorMessages'
 	  ])
 	},
 	methods: {
@@ -45,10 +64,12 @@ export default {
         password: this.password,
         password_confirmation: this.confirm_password
 	    })
-      // this.doRegistration({
-      //   email: this.email,
-      //   password: this.password
-      // })
+      .then((res) => {
+        console.log("registration vue res")
+      }) 
+      .catch(err => {
+        console.log("got error")
+      })
 	  }
 	}
 }
@@ -100,6 +121,14 @@ export default {
           background-color: lightslategray;
         }
       }
+    }
+    .error-message {
+      text-align: left;
+      color: red;
+      margin-top: 0px;
+    }
+    p.error-message {
+      font-size: 12px;
     }
   }
 </style>

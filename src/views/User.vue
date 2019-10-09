@@ -1,10 +1,5 @@
 <template>
   <div>
-    <h3>{{ title }}</h3>
-    <p>User ID: {{ $route.params.id }}</p>
-    <p>Username: {{ userName }} </p>
-    <p>Useremail: {{ userEmail }} </p>
-
     <h2>User Information From Database</h2>
     <p>User ID    : {{ user.id }}</p>
     <p>User Name  : {{ user.name }}</p>
@@ -34,10 +29,6 @@ export default {
     ]),
   },
   computed: {
-    ...mapState([
-      'userName',
-      'userEmail'
-    ]),
     ...mapGetters([
       'getAuthorizationToken'
     ])

@@ -17,9 +17,10 @@ let mutations = {
     state.accessToken = null
   },
   registrationStart: state => state.registeringIn = true,
-  registrationStop: (state, errorMessage) => {
+  registrationStop: (state, params) => {
     state.registeringIn = false
-    state.registrationError = errorMessage
+    state.registrationError = params.registrationError
+    state.registrationErrorMessages = params.registrationErrorMessages
   },
 }
 

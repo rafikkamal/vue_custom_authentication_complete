@@ -30,7 +30,7 @@ let actions = {
       }
     })
     .catch(error => {
-      console.log(error)
+      console.log(error.response.data)
       //commit('loginStop', error.response.data.error)
       commit('loginStop', error)
       commit('updateAccessToken', {
@@ -133,29 +133,38 @@ let actions = {
       ...registrationData
     }, axiosConfig)
     .then(response => {
-      //localStorage.setItem('accessToken', response.data.token)
-      commit('registrationStop', null)
-      //commit('updateAccessToken', response.data.token)
-      /*
-       * Get User Info
-       */
-      //localStorage.setItem('userName', "Some Name")
-      //localStorage.setItem('userEmail', "somename@email.com")
-      //dispatch('fetchUserInfo').then((res) => {});
-      //router.push('/users')
+      commit('registrationStop', {
+        'registrationError': null, 
+        'registrationErrorMessages': null
+      })
       router.push('/login')
     })
     .catch(error => {
-      console.log(error)
-      commit('registrationStop', error.response.data.error)
+      var errorMessages = {}
+      var errorMessage = ""
+      var errors = error.response.data.errors
+      for(var key in errors) {
+        var errorObj = errors[key]
+        for (let prop in errorObj) {
+          errorMessage += errorObj[prop]
+        }
+        errorMessages[key] = errorMessage
+        errorMessage = ""
+      }
+      //commit('registrationStop', error.response.data.errors)
+      commit('registrationStop', {
+        'registrationError': 'Please fix the errors', 
+        'registrationErrorMessages': errorMessages
+      })
     })
   },
   getUserInfo({ commit, dispatch }, params) {
     /* Axios header config */
     let axiosConfig = {
       headers: {
-        'Accept': 'application/json',
-        'Authorization': params.authorizationToken
+        'Content-Type': 'application/json',
+        'Authorization': params.authorizationToken,
+        'Accept': 'application/json'
       }
     };
     let userInfo = axios.get(siteUrl+'user', axiosConfig)
@@ -163,8 +172,7 @@ let actions = {
       return response
     })
     .catch(error => {
-      console.log(error)
-      commit('registrationStop', error.response.data.error)
+      console.log(error.response.data)
     })
     return userInfo
   }
