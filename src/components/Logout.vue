@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex'
+import router from '../router'
 
 export default {
   computed: {

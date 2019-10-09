@@ -72,7 +72,7 @@ export default {
             'userName': res.userName,
             'userEmail': res.userEmail
           })
-          router.push('/users')
+          router.push('/user')
         } else {
           this.loginStop({
             'loginError': 'Please Enter Corrent Email / Password', 

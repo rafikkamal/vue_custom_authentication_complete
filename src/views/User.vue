@@ -11,6 +11,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
 import Logout from '../components/Logout.vue'
+import router from '../router'
 
 export default {
   components: {

@@ -4,7 +4,7 @@ import store from './store';
 
 Vue.use(Router)
 
-const default_url__dashboard = "/users"
+const default_url__dashboard = "/user"
 const default_url__login = "/login"
 
 const router = new Router({
@@ -28,7 +28,7 @@ const router = new Router({
       }
     },
     {
-      path: '/users',
+      path: '/users/:id',
       name: 'users',
       component: () => import('./views/Users.vue'),
       beforeEnter: (to, from, next) => {
@@ -36,7 +36,7 @@ const router = new Router({
       }
     },
     {
-      path: '/user/:id',
+      path: '/user',
       name: 'user',
       component: () => import('./views/User.vue'),
       beforeEnter: (to, from, next) => {

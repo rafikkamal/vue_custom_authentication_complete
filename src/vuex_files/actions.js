@@ -78,16 +78,19 @@ let actions = {
     };
     axios.get(siteUrl+'logout', axiosConfig)
     .then(response => {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('tokenType')
-      localStorage.removeItem('expiresAt')
-      dispatch('removeUserInfo')
-      commit('logout')
-      router.push('/login')
+      if(response.status == 200) {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('tokenType')
+        localStorage.removeItem('expiresAt')
+        dispatch('removeUserInfo')
+        commit('logout')
+        router.push('/login')
+      }
     })
     .catch(error => {
       console.log(error)
     })
+    return {success: true}
   },
   fetchAccessToken({ commit, dispatch }, params) {
     var accessToken = localStorage.getItem('accessToken')
@@ -221,21 +224,6 @@ let actions = {
       console.log(error.response.data)
     })
     return userInfo
-  },
-  getFormValidationErrorMessages({commit, dispatch}, params) {
-    var errorMessages = {}
-    var errorObjs = params.errors
-    var errorMessage = ""
-    for(var key in errorObjs) {
-      var errorObj = errorObjs[key]
-      for (let prop in errorObj) {
-        errorMessage += errorObj[prop]
-      }
-      errorMessages[key] = errorMessage
-      errorMessage = ""
-    }
-    console.log(errorMessages)
-    return errorMessages
   }
 }
 

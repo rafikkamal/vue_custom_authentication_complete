@@ -17,6 +17,8 @@ let mutations = {
   },
   logout: (state) => {
     state.accessToken = null
+    state.tokenType = null
+    state.expiresAt = null
   },
   registrationStart: state => state.registeringIn = true,
   registrationStop: (state, params) => {
